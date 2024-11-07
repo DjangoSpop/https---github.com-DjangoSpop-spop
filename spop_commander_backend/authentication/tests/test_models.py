@@ -2,6 +2,9 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
 
+from authentication.serializers import User
+
+
 class SyncTests(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(

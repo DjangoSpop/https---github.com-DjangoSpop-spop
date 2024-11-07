@@ -2,9 +2,10 @@ from django.db import models
 
 # Create your models here.
 from django.db import models
-from spop_commander_backend.core.models import BaseModel
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+
+from core.models import BaseModel
 
 
 class SyncStatus(BaseModel):
@@ -33,7 +34,6 @@ class SyncQueue(BaseModel):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.UUIDField()
     content_object = GenericForeignKey('content_type', 'object_id')
-
     sync_type = models.CharField(max_length=10, choices=SYNC_TYPES)
     data = models.JSONField()
     priority = models.IntegerField(default=0)
@@ -42,4 +42,5 @@ class SyncQueue(BaseModel):
     error_message = models.TextField(blank=True)
 
     class Meta:
-        ordering = ['priority', 'created_at']
+        ordering = ['-updated_at']
+

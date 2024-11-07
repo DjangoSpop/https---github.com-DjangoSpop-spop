@@ -1,29 +1,57 @@
 from django.db import models
-from django.utils import timezone
+from core.models import BaseModel
+from django.conf import settings
+from officers.models import Officer
 
 
-# Create your models here.
-class Order(models.Model):
-    class OrderPriority(models.IntegerChoices):
-        LOW = 0, 'Low'
-        MEDIUM = 1, 'Medium'
-        HIGH = 2, 'High'
+class Order(BaseModel):
+    PRIORITY_CHOICES = [
+        ('normal', 'عادي'),
+        ('high', 'عالي'),
+        ('urgent', 'عاجل'),
+    ]
 
-    class OrderStatus(models.IntegerChoices):
-        PENDING = 0, 'Pending'
-        IN_PROGRESS = 1, 'In Progress'
-        COMPLETED = 2, 'Completed'
-        CANCELLED = 3, 'Cancelled'
+    STATUS_CHOICES = [
+        ('pending', 'قيد الانتظار'),
+        ('in_progress', 'جاري التنفيذ'),
+        ('completed', 'مكتمل'),
+        ('cancelled', 'ملغي'),
+    ]
 
-    id = models.CharField(primary_key=True, max_length=255)
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=200)
     description = models.TextField()
-    priority = models.IntegerField(choices=OrderPriority.choices, default=OrderPriority.LOW)
-    status = models.IntegerField(choices=OrderStatus.choices, default=OrderStatus.PENDING)
-    assigned_to = models.CharField(max_length=255)
-    created_at = models.DateTimeField(default=timezone.now)
-    comments = models.JSONField(default=list)  # List of comments as JSON
-    metadata = models.JSONField(blank=True, null=True)  # Optional metadata
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='created_orders'
+    )
+    assigned_to = models.ForeignKey(
+        Officer,
+        on_delete=models.CASCADE,
+        related_name='assigned_orders'
+    )
+    priority = models.CharField(
+        max_length=10,
+        choices=PRIORITY_CHOICES,
+        default='normal'
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending'
+    )
+    due_date = models.DateTimeField()
+    is_urgent = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.title} - {self.get_status_display()}"
+        return self.title
+
+
+class OrderAcknowledgment(BaseModel):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='acknowledgments')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    acknowledged_at = models.DateTimeField(auto_now_add=True)
+    comments = models.TextField(blank=True)

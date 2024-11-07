@@ -4,6 +4,9 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 class OfficerUpdatesConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        if not await self.authenticate_user():
+            await self.close()
+            return
         self.officer_id = self.scope['url_route']['kwargs']['officer_id']
         self.room_group_name = f'officer_{self.officer_id}_updates'
 

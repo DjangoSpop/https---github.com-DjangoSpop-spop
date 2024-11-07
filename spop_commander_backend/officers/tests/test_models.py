@@ -1,6 +1,9 @@
-from rest_framework.test import APITestCase
-from rest_framework import status
+
 from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
+from authentication.models import User
+
 
 class SyncTests(APITestCase):
     def setUp(self):

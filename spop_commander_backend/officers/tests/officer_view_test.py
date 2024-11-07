@@ -1,4 +1,4 @@
-# orders/tests/test_views.py
+# orders/tests/test_models.py
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
