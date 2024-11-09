@@ -6,8 +6,10 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from authentication.views import UserViewSet
+from circular.views import CircularViewSet
 from officers.views import OfficerViewSet
 from order.views import OrderViewSet
+from reports.views import ReportsViewSet
 from spop_commander_backend import settings
 from sync.views import SyncViewSet
 from tasks.views import TaskViewSet
@@ -34,6 +36,8 @@ router.register(r'sync', SyncViewSet, basename='sync')
 router.register(r'tasks', TaskViewSet, basename='task')
 router.register(r'orders', OrderViewSet, basename='order')
 router.register(r'weeklyplan', WeeklyPlanViewSet, basename='weekly-plan')
+router.register(r'reports' , ReportsViewSet, basename='reports')
+router.register(r'circulars', CircularViewSet, basename='circulars')
 
 
 

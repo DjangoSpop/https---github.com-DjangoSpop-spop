@@ -1,8 +1,11 @@
 from django.shortcuts import render
-from rest_framework import viewsets, permissions
+from django.utils import timezone
+from rest_framework import viewsets, permissions, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
-from reports.models import Reports
-from reports.serializers import ReportSerializer
+from reports.models import Reports, ReportAttachment, ReportStatistics, ReportStatus
+from reports.serializers import ReportSerializer, ReportAttachmentSerializer, ReportStatisticsSerializer
 
 
 # Create your views here.

@@ -96,6 +96,7 @@ INSTALLED_APPS = [
     'tasks',
     'order',
     'sync',
+    'circular',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',  # Add this
