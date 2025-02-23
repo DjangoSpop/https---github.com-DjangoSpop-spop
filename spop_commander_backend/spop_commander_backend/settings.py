@@ -61,7 +61,7 @@ CORS_ALLOW_HEADERS = [
 CORS_ALLOW_CREDENTIALS = True
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-APPEND_SLASH = False
+APPEND_SLASH = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',

@@ -8,6 +8,8 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Count, Q, F
 from datetime import datetime, timedelta
 
+from reports.serializers import ReportSerializer
+from weekly_plans.serializers import WeeklyPlanSerializer
 from .models import Officer
 from .serializers import OfficerSerializer, OfficerDetailSerializer
 from tasks.models import Task
@@ -17,7 +19,25 @@ from tasks.serializers import TaskSerializer
 class OfficerViewSet(viewsets.ModelViewSet):
     queryset = Officer.objects.all()
     serializer_class = OfficerSerializer
-    permission_classes = [IsAuthenticated]
+
+    @action(detail=False, methods=['get'])
+    def profile(self, request):
+        officer = request.user.officer_profile
+        serializer = self.get_serializer(officer)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def weekly_schedule(self, request):
+        officer = request.user.officer_profile
+        serializer = WeeklyPlanSerializer
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def recent_reports(self, request):
+        officer = request.user.officer_profile
+        reports = officer.reports.order_by('-created_at')[:5]
+        serializer = ReportSerializer(reports, many=True)
+        return Response(serializer.data)
 
     def get_serializer_class(self):
         if self.action in ['retrieve', 'details']:

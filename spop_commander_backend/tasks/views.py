@@ -11,8 +11,7 @@ from tasks.serializers import TaskSerializer
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+
 
     def get_queryset(self):
         """Override get_queryset to allow filtering based on query parameters."""
@@ -38,6 +37,20 @@ class TaskViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=False, methods=['get'])
+    def active(self, request):
+        tasks = Task.objects.filter(
+            assigned_to=request.user.officer_profile,
+            status='in_progress'
+        )
+        serializer = self.get_serializer(tasks, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def available(self, request):
+        tasks = Task.objects.filter(status='pending')
+        serializer = self.get_serializer(tasks, many=True)
+        return Response(serializer.data)
     @action(detail=True, methods=['patch'])
     def update_task_status(self, request, pk=None):
         """Update the status of a specific task by its primary key."""

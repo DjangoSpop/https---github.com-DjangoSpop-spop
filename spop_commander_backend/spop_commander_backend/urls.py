@@ -7,6 +7,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from authentication.views import UserViewSet
 from circular.views import CircularViewSet
+from notifcations.views import NotificationViewSet
 from officers.views import OfficerViewSet
 from order.views import OrderViewSet
 from reports.views import ReportsViewSet
@@ -42,6 +43,20 @@ router.register(r'circulars', CircularViewSet, basename='circulars')
 
 
 urlpatterns = [
+    path('api/', include([
+        path('', include(router.urls)),
+        # Officer specific endpoints
+        path('officer/', include([
+            path('profile/', OfficerViewSet.as_view({'get': 'profile'}), name='officer-profile'),
+            path('reports/recent/', OfficerViewSet.as_view({'get': 'recent_reports'}), name='recent-reports'),
+            path('schedule/weekly/', OfficerViewSet.as_view({'get': 'weekly_schedule'}), name='weekly-schedule'),
+            path('notifications/unread/', NotificationViewSet.as_view({'get': 'unread'}), name='unread-notifications'),
+        ])),
+path('tasks/', include([
+            path('active/', TaskViewSet.as_view({'get': 'active'}), name='active-tasks'),
+            path('available/', TaskViewSet.as_view({'get': 'available'}), name='available-tasks'),
+        ])),
+    ])),
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # Get access and refresh tokens
